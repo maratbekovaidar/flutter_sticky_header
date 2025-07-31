@@ -41,8 +41,7 @@ class _FloatingActionButton extends StatelessWidget {
       child: Icon(Icons.adjust),
       backgroundColor: Colors.green,
       onPressed: () {
-        final double offset =
-            DefaultStickyHeaderController.of(context)!.stickyHeaderScrollOffset;
+        final double offset = DefaultStickyHeaderController.of(context)!.stickyHeaderScrollOffset;
         PrimaryScrollController.of(context).animateTo(
           offset,
           duration: Duration(milliseconds: 300),
@@ -78,6 +77,38 @@ class Header extends StatelessWidget {
         alignment: Alignment.centerLeft,
         child: Text(
           title ?? 'Header #$index',
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+}
+
+class Footer extends StatelessWidget {
+  const Footer({
+    Key? key,
+    this.index,
+    this.title,
+    this.color = Colors.redAccent,
+  }) : super(key: key);
+
+  final String? title;
+  final int? index;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        print('hit $index');
+      },
+      child: Container(
+        height: 60,
+        color: color,
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        alignment: Alignment.centerLeft,
+        child: Text(
+          title ?? 'Footer #$index',
           style: const TextStyle(color: Colors.white),
         ),
       ),

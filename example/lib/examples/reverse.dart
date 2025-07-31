@@ -34,7 +34,8 @@ class _StickyHeaderList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverStickyHeader(
-      header: Header(index: index),
+      footer: Footer(index: index),
+      stickyFooter: true,
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
           (context, i) => ListTile(

@@ -12,6 +12,7 @@ class ListExample extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: 'List Example',
+      reverse: true,
       slivers: [
         _StickyHeaderList(index: 0),
         _StickyHeaderList(index: 1),
@@ -33,7 +34,8 @@ class _StickyHeaderList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverStickyHeader(
-      header: Header(index: index),
+      // header: Header(index: index),
+      footer: Footer(index: index),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
           (context, i) => ListTile(
