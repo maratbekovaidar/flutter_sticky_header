@@ -12,9 +12,11 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
     RenderSliver? child, // Рендеринг дочернего sliver.
     bool overlapsContent = false, // Флаг, перекрывает ли заголовок контент.
     bool sticky = true, // Флаг, закрепляется ли заголовок.
+    bool reverse = false, // Флаг, указывающий направление прокрутки.
     StickyHeaderController? controller, // Контроллер для управления заголовком.
   })  : _overlapsContent = overlapsContent,
         _sticky = sticky,
+        _reverse = reverse,
         _controller = controller {
     this.header = header as RenderBox?; // Установка заголовка.
     this.child = child; // Установка дочернего sliver.
@@ -42,6 +44,17 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
     if (_sticky == value) return; // Если значение не изменилось, ничего не делаем.
     _sticky = value;
     markNeedsLayout(); // Помечаем, что требуется перерасчет макета.
+  }
+
+  // Геттер и сеттер для reverse.
+  bool get reverse => _reverse;
+  bool _reverse;
+
+  set reverse(bool value) {
+    assert(value != null);
+    if (_reverse == value) return;
+    _reverse = value;
+    markNeedsLayout();
   }
 
   // Геттер и сеттер для controller.

@@ -7,6 +7,7 @@ import 'examples/list.dart';
 import 'examples/mix_slivers.dart';
 import 'examples/not_sticky.dart';
 import 'examples/reverse.dart';
+import 'examples/reverse_header.dart';
 import 'examples/side_header.dart';
 
 void main() {
@@ -66,6 +67,10 @@ class _Home extends StatelessWidget {
             builder: (_) => const ReverseExample(),
           ),
           _Item(
+            text: 'Reverse Header Example',
+            builder: (_) => const ReverseHeaderExample(),
+          ),
+          _Item(
             text: 'Mixing other slivers',
             builder: (_) => const MixSliversExample(),
           ),
@@ -94,14 +99,12 @@ class _Item extends StatelessWidget {
     return Card(
       color: Colors.blue,
       child: InkWell(
-        onTap: () =>
-            Navigator.push(context, MaterialPageRoute(builder: builder)),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: builder)),
         child: Container(
           padding: EdgeInsets.all(16),
           child: Text(
             text,
-            style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
           ),
         ),
       ),

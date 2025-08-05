@@ -148,6 +148,7 @@ class SliverStickyHeader extends RenderObjectWidget {
     this.sliver,
     this.overlapsContent = false,
     this.sticky = true,
+    this.reverse = false,
     this.controller,
   }) : super(key: key);
 
@@ -164,6 +165,7 @@ class SliverStickyHeader extends RenderObjectWidget {
     Widget? sliver,
     bool overlapsContent = false,
     bool sticky = true,
+    bool reverse = false,
     StickyHeaderController? controller,
   }) : this(
           key: key,
@@ -171,6 +173,7 @@ class SliverStickyHeader extends RenderObjectWidget {
             builder: (context, constraints) => builder(context, constraints.value),
           ),
           sliver: sliver,
+          reverse: reverse,
           overlapsContent: overlapsContent,
           sticky: sticky,
           controller: controller,
@@ -190,6 +193,10 @@ class SliverStickyHeader extends RenderObjectWidget {
   /// Defaults to true.
   final bool sticky;
 
+  /// Reverse a header widget depends of child
+  /// Defaults to false.
+  final bool reverse;
+
   /// The controller used to interact with this sliver.
   ///
   /// If a [StickyHeaderController] is not provided, then the value of [DefaultStickyHeaderController.of]
@@ -201,6 +208,7 @@ class SliverStickyHeader extends RenderObjectWidget {
     return RenderSliverStickyHeader(
       overlapsContent: overlapsContent,
       sticky: sticky,
+      reverse: reverse,
       controller: controller ?? DefaultStickyHeaderController.of(context),
     );
   }
@@ -216,6 +224,7 @@ class SliverStickyHeader extends RenderObjectWidget {
     renderObject
       ..overlapsContent = overlapsContent
       ..sticky = sticky
+      ..reverse = reverse
       ..controller = controller ?? DefaultStickyHeaderController.of(context);
   }
 }
@@ -241,6 +250,7 @@ class SliverStickyHeaderBuilder extends StatelessWidget {
     this.sliver,
     this.overlapsContent = false,
     this.sticky = true,
+    this.reverse = false,
     this.controller,
   }) : super(key: key);
 
@@ -260,6 +270,8 @@ class SliverStickyHeaderBuilder extends StatelessWidget {
   /// Whether to stick the header.
   /// Defaults to true.
   final bool sticky;
+
+  final bool reverse;
 
   /// The controller used to interact with this sliver.
   ///
