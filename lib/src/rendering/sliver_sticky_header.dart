@@ -51,7 +51,6 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
   bool _reverse;
 
   set reverse(bool value) {
-    assert(value != null);
     if (_reverse == value) return;
     _reverse = value;
     markNeedsLayout();
@@ -166,7 +165,7 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
     // Определяем направление оси с учетом направления роста.
     AxisDirection axisDirection =
         applyGrowthDirectionToAxisDirection(constraints.axisDirection, constraints.growthDirection);
-
+    print('axisDirection: $axisDirection'); // Отладочный вывод направления оси.
     // Если заголовок существует, выполняем его макет.
     if (header != null) {
       header!.layout(
@@ -249,15 +248,27 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
       final SliverPhysicalParentData? childParentData = child!.parentData as SliverPhysicalParentData?;
       switch (axisDirection) {
         case AxisDirection.up:
-          childParentData!.paintOffset = Offset.zero; // Смещение для оси вверх.
+          // old impl
+          // childParentData!.paintOffset = Offset.zero; // Смещение для оси вверх.
+          // this was working ... but maybe this is getting in the way of what we should be re-positioning
+          if (_reverse)
+            childParentData!.paintOffset = Offset(0.0, -headerExtent);
+          else
+            childParentData!.paintOffset = Offset.zero; // reverse
           break;
         case AxisDirection.right:
           childParentData!.paintOffset =
               Offset(calculatePaintOffset(constraints, from: 0.0, to: headerExtent), 0.0); // Смещение для оси вправо.
           break;
         case AxisDirection.down:
-          childParentData!.paintOffset =
-              Offset(0.0, calculatePaintOffset(constraints, from: 0.0, to: headerExtent)); // Смещение для оси вниз.
+          // old impl
+          // childParentData!.paintOffset =
+          //     Offset(0.0, calculatePaintOffset(constraints, from: 0.0, to: headerExtent)); // Смещение для оси вниз.
+          // new impl
+          if (_reverse)
+            childParentData!.paintOffset = Offset(0.0, -headerExtent);
+          else
+            childParentData!.paintOffset = Offset(0.0, calculatePaintOffset(constraints, from: 0.0, to: headerExtent));
           break;
         case AxisDirection.left:
           childParentData!.paintOffset = Offset.zero; // Смещение для оси влево.
@@ -277,10 +288,23 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
                   (overlapsContent ? _headerExtent! : 0.0)) // Позиция заголовка при закреплении.
           : -constraints.scrollOffset; // Позиция заголовка без закрепления.
 
-      _isPinned = sticky &&
-          ((constraints.scrollOffset + constraints.overlap) > 0.0 ||
-              constraints.remainingPaintExtent ==
-                  constraints.viewportMainAxisExtent); // Проверяем, закреплен ли заголовок.
+      // old impl
+      // _isPinned = sticky &&
+      //     ((constraints.scrollOffset + constraints.overlap) > 0.0 ||
+      //         constraints.remainingPaintExtent ==
+      //             constraints.viewportMainAxisExtent); // Проверяем, закреплен ли заголовок.
+      // new impl
+      // Проверяем, закреплен ли заголовок.
+      _isPinned = () {
+        if (!sticky) return false;
+        if (_reverse)
+          return (constraints.remainingPaintExtent <
+              (constraints.viewportMainAxisExtent -
+                  ((child!.parentData as SliverPhysicalParentData?)?.paintOffset.distance ?? 0)));
+        else
+          return ((constraints.scrollOffset + constraints.overlap) > 0.0 ||
+              constraints.remainingPaintExtent == constraints.viewportMainAxisExtent);
+      }();
 
       final double headerScrollRatio =
           ((headerPosition - constraints.overlap).abs() / _headerExtent!); // Вычисляем процент прокрутки заголовка.
@@ -310,7 +334,15 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
       // Устанавливаем смещение для заголовка в зависимости от направления оси.
       switch (axisDirection) {
         case AxisDirection.up:
-          headerParentData!.paintOffset = Offset(0.0, geometry!.paintExtent - headerPosition - _headerExtent!);
+          // old impl
+          // headerParentData!.paintOffset = Offset(0.0, geometry!.paintExtent - headerPosition - _headerExtent!);
+          // new impl
+          double headerOffset = -headerPosition - _headerExtent!;
+          if (_reverse)
+            headerParentData!.paintOffset = Offset(0.0,
+                0.0 + (constraints.remainingPaintExtent < _headerExtent! ? (geometry!.paintExtent + headerOffset) : 0));
+          else
+            headerParentData!.paintOffset = Offset(0.0, geometry!.paintExtent + headerOffset);
           break;
         case AxisDirection.down:
           headerParentData!.paintOffset = Offset(0.0, headerPosition);
@@ -360,9 +392,13 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
 
   @override
   double childMainAxisPosition(RenderObject? child) {
-    // Вычисляем позицию дочернего элемента.
-    if (child == header) return _isPinned ? 0.0 : -(constraints.scrollOffset + constraints.overlap);
-    if (child == this.child) return calculatePaintOffset(constraints, from: 0.0, to: headerLogicalExtent!);
+    if (child == header) {
+      if (_isPinned) return 0;
+      if (!_reverse) return _isPinned ? 0.0 : -(constraints.scrollOffset + constraints.overlap);
+      return (constraints.scrollOffset + constraints.overlap);
+    } else if (child == this.child) {
+      return calculatePaintOffset(constraints, from: 0.0, to: headerLogicalExtent!);
+    }
     return 0;
   }
 
@@ -371,7 +407,12 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
     // Вычисляем смещение прокрутки для дочернего элемента.
     assert(child.parent == this);
     if (child == this.child) {
-      return _headerExtent;
+      return 0;
+      // if (_reverse)
+      // return 0;
+      //   return _headerExtent;
+      // } else if (_reverse && child == this._header) {
+      //   return _headerExtent;
     } else {
       return super.childScrollOffset(child);
     }
@@ -390,7 +431,7 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
     if (geometry!.visible) {
       if (child != null && child!.geometry!.visible) {
         final SliverPhysicalParentData childParentData = child!.parentData as SliverPhysicalParentData;
-        context.paintChild(child!, offset + childParentData.paintOffset);
+        context.paintChild(child!, offset + (_reverse ? -childParentData.paintOffset : childParentData.paintOffset));
       }
 
       // Заголовок должен рисоваться поверх sliver.

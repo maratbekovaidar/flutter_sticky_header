@@ -3,15 +3,16 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 
 import '../common.dart';
 
-class ReverseHeaderExample extends StatelessWidget {
-  const ReverseHeaderExample({
+class ReverseHeaderWithReverseListExample extends StatelessWidget {
+  const ReverseHeaderWithReverseListExample({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Reverse Header Example',
+      reverse: true,
+      title: 'Reverse Header with reversed list Example',
       slivers: [
         _StickyHeaderList(index: 0),
         _StickyHeaderList(index: 1),

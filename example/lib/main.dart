@@ -1,4 +1,5 @@
 import 'package:example/examples/nested.dart';
+import 'package:example/examples/reverse_header_with_reverse_list.dart';
 import 'package:flutter/material.dart';
 
 import 'examples/animated_header.dart';
@@ -69,6 +70,10 @@ class _Home extends StatelessWidget {
           _Item(
             text: 'Reverse Header Example',
             builder: (_) => const ReverseHeaderExample(),
+          ),
+          _Item(
+            text: 'Reverse Header with reversed list Example',
+            builder: (_) => const ReverseHeaderWithReverseListExample(),
           ),
           _Item(
             text: 'Mixing other slivers',
