@@ -35,9 +35,13 @@ class _StickyHeaderList extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverStickyHeader(
       header: Header(index: index),
+      reverse: true,
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
           (context, i) => ListTile(
+            onTap: () {
+              print('tile $i');
+            },
             leading: CircleAvatar(
               child: Text('$index'),
             ),
