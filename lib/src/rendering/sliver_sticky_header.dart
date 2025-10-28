@@ -15,9 +15,11 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
     RenderSliver? child,
     bool overlapsContent = false,
     bool sticky = true,
+    bool reverse = false,
     StickyHeaderController? controller,
   })  : _overlapsContent = overlapsContent,
         _sticky = sticky,
+        _reverse = reverse,
         _controller = controller {
     this.header = header as RenderBox?;
     this.child = child;
@@ -43,6 +45,12 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
     if (_sticky == value) return;
     _sticky = value;
     markNeedsLayout();
+  }
+
+  bool get reverse => _reverse;
+  bool _reverse;
+  set reverse(bool value) {
+    _reverse = value;
   }
 
   StickyHeaderController? get controller => _controller;
